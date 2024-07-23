@@ -3,7 +3,7 @@ const catchAsyncErrors = require("../middlewares/catchAsyncErrors");
 const User = require("../models/userModel");
 const bcrypt = require("bcrypt")
 const sendToken = require("../utils/jwtToken");
-// const sendEmail = require("../utils/sendEmail");
+const sendEmail = require("../utils/sendEmail");
 const crypto = require("crypto");
 
 // Register User...
@@ -69,7 +69,7 @@ forgotPassword = catchAsyncErrors(async (req, res, next) => {
   const user = await User.findOne({ email: req.body.email });
 
   if (!user) {
-    return next(new ErrorHandler("User Not Found", 404));
+    return res.status(404).json({message: "User Not Found"})
   }
 
   // Get Reset Password token
@@ -85,7 +85,7 @@ forgotPassword = catchAsyncErrors(async (req, res, next) => {
   try {
     await sendEmail({
       email: user.email,
-      subject: `Vaishnavmart Password Recovery`,
+      subject: `Password Recovery`,
       message,
     });
 
@@ -99,7 +99,7 @@ forgotPassword = catchAsyncErrors(async (req, res, next) => {
 
     await user.save({ validateBeforeSave: false });
 
-    return next(new ErrorHandler(error.message, 500));
+    return res.status(500).json(error.message)
   }
 });
 
@@ -118,16 +118,11 @@ resetPassword = catchAsyncErrors(async (req, res, next) => {
   });
 
   if (!user) {
-    return next(
-      new ErrorHandler(
-        "Reset Password Token is invalid or has been expired",
-        400
-      )
-    );
+    return res.status(400).json({message: "Reset Password Token is invalid or has been expired"});
   }
 
   if (req.body.password !== req.body.confirmPassword) {
-    return next(new ErrorHandler("Password does not password", 400));
+    return res.status(400).json({message:"Password does not password"});
   }
 
   user.password = req.body.password;
@@ -141,7 +136,7 @@ resetPassword = catchAsyncErrors(async (req, res, next) => {
 });
 
  // Get User Detail...
-getUserDetails = catchAsyncErrors(async(req, res, next)=>{
+getUserDetails = catchAsyncErrors(async(req, res)=>{
   const user = await User.findById(req.user.id);
     res.status(200).json({
       success:true,
@@ -150,18 +145,18 @@ getUserDetails = catchAsyncErrors(async(req, res, next)=>{
 });
 
 // Update User Password...
-updatePassword = catchAsyncErrors(async(req, res, next)=>{
+updatePassword = catchAsyncErrors(async(req, res)=>{
 
   const user = await User.findById(req.user.id).select("+password");
 
   const isPasswordMatched = await user.comparePassword(req.body.oldPassword);
 
   if (!isPasswordMatched) {
-    return next(new ErrorHandler("Old Password is incorrect", 400));
+    return res.status(400).json({message:"Old Password is incorrect"});
   }
 
   if(req.body.newPassword !== req.body.confirmPassword){
-    return next(new ErrorHandler("Password does not matched", 400));
+    return res.status(400).json({message:"Password does not matched"});
   }
 
   user.password = req.body.newPassword;
@@ -172,13 +167,11 @@ updatePassword = catchAsyncErrors(async(req, res, next)=>{
 });
 
 // Updaate User Profile...
-updateProfile = catchAsyncErrors(async(req, res, next)=>{
+updateProfile = catchAsyncErrors(async(req, res)=>{
     const newUserData = {
       name:req.body.name,
       email:req.body.email,
     }
-
-    // We Will Add Cloudinary later
 
     const user =  await User.findByIdAndUpdate(req.user.id, newUserData, {
       new:true,
@@ -192,7 +185,7 @@ updateProfile = catchAsyncErrors(async(req, res, next)=>{
 });
 
 // Get All User...
-getAllUser = catchAsyncErrors(async(req, res, next)=>{
+getAllUser = catchAsyncErrors(async(req, res)=>{
   const users = await User.find();
   res.status(200).json({
     success:true,
@@ -201,10 +194,10 @@ getAllUser = catchAsyncErrors(async(req, res, next)=>{
 });
 
 // Get Single user By Admin...
-getSingleUser = catchAsyncErrors(async(req, res, next)=>{
+getSingleUser = catchAsyncErrors(async(req, res)=>{
   const user = await User.findById(req.params.id);
   if(!user){
-    return next(new ErrorHandler(`User does not exist with id ${req.params.id}`))
+    return res.status(400).json(`User does not exist with id ${req.params.id}`)
   }
   res.status(200).json({
     success:true,
@@ -213,13 +206,13 @@ getSingleUser = catchAsyncErrors(async(req, res, next)=>{
 });
 
 // Update User Role... Admin
-updateUserRole= catchAsyncErrors(async(req, res, next)=>{
+updateUserRole= catchAsyncErrors(async(req, res)=>{
   const newUserData = {
     name:req.body.name,
     email:req.body.email,
     role:req.body.role
   }
-  // We Will Add Cloudinary later
+ 
   const user =  await User.findByIdAndUpdate(req.params.id, newUserData, {
     new:true,
     runValidators:true,
@@ -232,18 +225,18 @@ updateUserRole= catchAsyncErrors(async(req, res, next)=>{
 });
 
 // Delete Single User... Admin
-deleteUser = catchAsyncErrors(async(req, res, next)=>{
+deleteUser = catchAsyncErrors(async(req, res)=>{
   // remove from cloudNury
   const user  = await User.findById(req.params.id);
   if(!user){
-    return next(new ErrorHandler(`ser does not exit with id ${req.params.id} Entered` ))
+    return res.status(400).json(`user does not exit with id ${req.params.id} Entered`)
   }
 
   await user.deleteOne();
 
   res.status(200).json({
     success:true,
-    message:"User Delete Successfully"
+    message:"User Deleted Successfully"
   })
 });
 

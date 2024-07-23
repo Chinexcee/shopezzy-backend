@@ -2,11 +2,19 @@ const express = require("express")
 
 
 const dotenv = require("dotenv").config()
-
 const connectDatabase = require("./config/dbase")
-const User = require("./routes/userRoute")
+
+
+const User = require("./models/userModel")
+const Business = require("./models/businessModel")
+const Ad = require("./models/adModel")
+const Cart = require("./models/cartModel")
+const Order = require("./models/orderModel")
+
 
 const app =express()
+
+
 
 
 app.use(express.json())
@@ -28,12 +36,10 @@ app.get("/", (req, res)=>{
 })
 
 app.use(User)
-
-// app.use("/api", routeres)
-
-// app.use("/api", routee)
-
-// app.use('/api', auth)
+app.use(Business)
+app.use(Ad)
+app.use(Cart)
+app.use(Order)
 
 
 

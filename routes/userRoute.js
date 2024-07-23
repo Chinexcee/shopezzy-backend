@@ -15,6 +15,7 @@ const {
   deleteUser,
 } = require("../controls/userController");
 const { isAuthenticatedUser, authorizeRoles } = require("../middlewares/auth");
+
 const router = express.Router();
 
 router.post("/register", registerUser);
@@ -34,4 +35,10 @@ router
   .put(isAuthenticatedUser, authorizeRoles("admin"), updateUserRole)
   .delete(isAuthenticatedUser, authorizeRoles("admin"), deleteUser);
 
+
+
+
+
+
+  
 module.exports = router;
