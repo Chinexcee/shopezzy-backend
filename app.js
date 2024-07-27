@@ -5,11 +5,11 @@ const dotenv = require("dotenv").config()
 const connectDatabase = require("./config/dbase")
 
 
-const User = require("./models/userModel")
-const Business = require("./models/businessModel")
-const Ad = require("./models/adModel")
-const Cart = require("./models/cartModel")
-const Order = require("./models/orderModel")
+const userRoutes = require("./routes/userRoute"); 
+const businessRoutes = require("./routes/businessRoute"); 
+const adRoutes = require("./routes/adRoute"); 
+const cartRoutes = require("./routes/cartRoute"); 
+const orderRoutes = require("./routes/orderRoute"); 
 
 
 const app =express()
@@ -35,11 +35,11 @@ app.get("/", (req, res)=>{
   res.status(200).json({message: "Welcome to Shopezzy Server"})
 })
 
-app.use(User)
-app.use(Business)
-app.use(Ad)
-app.use(Cart)
-app.use(Order)
+app.use("/api/User", userRoutes)
+app.use("/api/Business", businessRoutes)
+app.use("/api/Ad", adRoutes)
+app.use("/api/Cart", cartRoutes)
+app.use("/api/Order", orderRoutes)
 
 
 

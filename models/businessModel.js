@@ -11,11 +11,19 @@ const businessSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  description: {
+  CAC_number:  {
     type: String,
-    required: true,
+    required: true
   },
-  address: {
+  business_address:  {
+    type: String,
+    required: true
+  },
+  home_address:  {
+    type: String,
+    required: true
+  },
+  description: {
     type: String,
     required: true,
   },
@@ -27,6 +35,7 @@ const businessSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+
 });
 
 const Business = mongoose.model('Business', businessSchema);

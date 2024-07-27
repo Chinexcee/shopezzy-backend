@@ -1,19 +1,23 @@
 
 const Business = require('../models/businessModel');
+const auth = require("../middlewares/auth")
 
 
 exports.postBusiness = async (req, res) => {
-  const { name, description, businessname, address, contactEmail, contactPhone } = req.body;
+  const { name, description, businessname, CAC_number, business_address, home_address, contactEmail, contactPhone } = req.body;
 
   try {
     const business = new Business({
       name,
       description,
       businessname,
-      address,
+      CAC_number, 
+      business_address, 
+      home_address,
       contactEmail,
       contactPhone,
     });
+
 
     await business.save();
 
@@ -29,4 +33,3 @@ exports.postBusiness = async (req, res) => {
   }
 };
 
-module.exports = Business
